@@ -63,8 +63,29 @@ namespace qa_dotnet_cucumber.Steps
             var wait = new WebDriverWait(_loginPage.Driver, TimeSpan.FromSeconds(10));
             var errorMessageElement = wait.Until(d => d.FindElement(By.CssSelector(".flash.error")));
             var errorMessage = errorMessageElement.Text;
-            Assert.That(errorMessage, Does.Match("Your username is invalid!|Your password is invalid!|Username is required"), 
+            Assert.That(errorMessage, Does.Match("Your username is invalid!|Your password is invalid!|Username is required"),
                 "Should see an appropriate error message");
         }
+        
+        [When("I enter a valid username and a password with 3 letters")]
+        public void WhenIEnterValidUsernameAndPasswordWith3Letters()
+        {
+            // Use LoginPage's Login method with a short password
+            _loginPage.Login("tomsmith", "abc"); // 3-letter password
+        }
+
+        [Then("I should see an error message about password length")]
+        public void ThenIShouldSeeAnErrorMessageAboutPasswordLength()
+        {
+           // Wait for the error message to appear
+           var wait = new WebDriverWait(_loginPage.Driver, TimeSpan.FromSeconds(10));
+           var errorMessageElement = wait.Until(d => d.FindElement(By.CssSelector(".flash.error")));
+           var errorMessage = errorMessageElement.Text;
+
+           // Check that the error is about password length
+           Assert.That(errorMessage, Does.Contain("Password must be at least 6 characters"),
+           "Should see an error message about password being too short");
+        }
+
     }
 }
