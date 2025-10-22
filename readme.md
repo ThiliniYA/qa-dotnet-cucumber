@@ -194,6 +194,81 @@ public class LoginPage
     - Keep page objects focused and maintainable
     - Follow the Single Responsibility Principle
 
+
+
+
+## Implementation Approach
+For this task,
+- I cloned the repository, restored project dependencies, and updated the settings.json
+    file with browser, report, and environment settings (set Chrome to headless mode).
+- I ran the existing tests using dotnet test and confirmed they passed.
+- I added manual screenshots of the test results for reference and updated the README file
+    to reflect the setup and framework structure.
+
+### Instructions for Running the Tests
+
+1. **Open a terminal/command prompt and navigate to the project root folder**:
+   
+   cd C:\Users\rayan\Desktop\Project-Mars\qa-dotnet-cucumber
+
+
+2. **Restore project dependencies**:
+  
+   dotnet restore
+
+3. **Run the tests**:
+  
+   dotnet test
+
+4. **Open the test report in your browser to view results**:
+   - Navigate to bin\Reports\TestReport.html
+   - The report shows all test scenarios, their pass/fail status
+
+## Implementation
+
+1. **Feature Files**:
+    - I created feature files for the login and registration tests and connected them to the step definition classes.
+
+2. **Page Object Model (POM)**:
+    - Separated UI actions into the Pages folder
+    - Kept test steps in the Steps folder for better organization
+
+3. **Configuration Settings**:
+    - Settings such as the browser type, timeouts, and report location are stored in the settings.json file.
+
+4. **Reports**:
+    - After each test run, an HTML report is automatically created and saved in the bin\Reports folder.
+      (bin/ folders,excluded from submission as per requirements).
+
+5. **Screenshots Reference**:
+    - Screenshots of the successfully passing test are available in the Screenshots folder.
+
+## Overview of the POM Structure
+   **Pages/**:
+   - Contains page classes representing different screens of the application
+   - Each class handles only UI interactions for that page and exposes methods
+
+   **Screenshots**:
+   - The `Screenshots` folder in the project contains manually saved images of test results to show how tests pass successfully.  
+These are for reference.
+
+   **Steps/**:
+   - Contains step definition classes that implement the Gherkin scenarios from the `.feature` files. 
+   - Step definitions call methods from page classes to perform actions or verify results.
+
+   **Features/**:
+   - Contains Gherkin `.feature` files that describe the test scenarios in plain English (Given-When-Then).
+
+   **Hooks/**:
+   - Contains setup and teardown logic, such as opening and closing the browser before/after each scenario.
+
+   **Config/**:
+   - Contains configuration classes and helper methods for navigation, waits, or other shared functionality.
+
+   **Tests/**:
+   - NUnit test runners that execute the scenarios using the page and step classes.
+
+
 ## Support
 
 For additional help or questions, please reach out to the team or create an issue in the repository.
