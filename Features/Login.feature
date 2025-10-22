@@ -20,3 +20,11 @@ Feature: Login Functionality
     Given I am on the login page
     When I enter empty credentials
     Then I should see an error message
+     
+   Scenario: Fail login with too short password
+    Given I am on the login page
+    When I enter a valid username and a password with 3 letters
+    Then I should see an error message
+
+
+  
