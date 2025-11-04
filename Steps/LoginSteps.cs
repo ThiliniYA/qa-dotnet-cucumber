@@ -1,70 +1,72 @@
-using OpenQA.Selenium;
-using Reqnroll;
 using NUnit.Framework;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using qa_dotnet_cucumber.Pages;
+using Reqnroll;
+using SeleniumExtras.WaitHelpers;
 
 namespace qa_dotnet_cucumber.Steps
 {
-    [Binding]
-    public class LoginSteps
+    public class LoginPage
     {
-        private readonly LoginPage _loginPage;
-        private readonly NavigationHelper _navigationHelper;
+        private readonly IWebDriver _driver;
+        private readonly WebDriverWait _wait;
 
-        public LoginSteps(LoginPage loginPage, NavigationHelper navigationHelper)
+        // Expose driver if needed
+        public IWebDriver Driver => _driver;
+
+        // Locators
+        private readonly By usernameField = By.Id("username");
+        private readonly By passwordField = By.Id("password");
+        private readonly By loginButton = By.CssSelector("button[type='submit']");
+        private readonly By flashMessage = By.CssSelector(".flash");
+
+        // Constructor
+        public LoginPage(IWebDriver driver)
         {
-            _loginPage = loginPage;
-            _navigationHelper = navigationHelper;
+            _driver = driver ?? throw new ArgumentNullException(nameof(driver));
+            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
         }
 
-        [Given("I am on the login page")]
-        public void GivenIAmOnTheLoginPage()
+        // Navigate to login page
+        public void NavigateTo(string url)
         {
-            _navigationHelper.NavigateTo("/login");
-            Assert.That(_loginPage.IsAtLoginPage(), Is.True, "Should be on the login page");
+            _driver.Navigate().GoToUrl(url);
         }
 
-        [When("I enter valid credentials")]
-        public void WhenIEnterValidCredentials()
+        // Perform login
+        public void Login(string username, string password)
         {
-            _loginPage.Login("tomsmith", "SuperSecretPassword!");
+            var usernameElement = _wait.Until(ExpectedConditions.ElementIsVisible(usernameField));
+            usernameElement.Clear();
+            usernameElement.SendKeys(username);
+
+            var passwordElement = _wait.Until(ExpectedConditions.ElementIsVisible(passwordField));
+            passwordElement.Clear();
+            passwordElement.SendKeys(password);
+
+            var loginButtonElement = _wait.Until(ExpectedConditions.ElementToBeClickable(loginButton));
+            loginButtonElement.Click();
         }
 
-        [When("I enter an invalid username and valid password")]
-        public void WhenIEnterAnInvalidUsernameAndValidPassword()
+        // Get any flash message (success or error)
+        public string GetFlashMessage()
         {
-            _loginPage.Login("invaliduser", "SuperSecretPassword!");
+            try
+            {
+                // Wait until any flash message is visible
+                return _wait.Until(ExpectedConditions.ElementIsVisible(flashMessage)).Text;
+            }
+            catch (WebDriverTimeoutException)
+            {
+                return string.Empty;
+            }
         }
 
-        [When("I enter a valid username and invalid password")]
-        public void WhenIEnterAValidUsernameAndInvalidPassword()
+        // Verify if currently at login page
+        public bool IsAtLoginPage()
         {
-            _loginPage.Login("tomsmith", "wrongpassword");
-        }
-
-        [When("I enter empty credentials")]
-        public void WhenIEnterEmptyCredentials()
-        {
-            _loginPage.Login("", "");
-        }
-
-        [Then("I should see the secure area")]
-        public void ThenIShouldSeeTheSecureArea()
-        {
-            var successMessage = _loginPage.GetSuccessMessage();
-            Assert.That(successMessage, Does.Contain("You logged into a secure area!"), "Should see successful login message");
-        }
-
-        [Then("I should see an error message")]
-        public void ThenIShouldSeeAnErrorMessage()
-        {
-            // Use LoginPage's driver to wait for and verify the error message
-            var wait = new WebDriverWait(_loginPage.Driver, TimeSpan.FromSeconds(10));
-            var errorMessageElement = wait.Until(d => d.FindElement(By.CssSelector(".flash.error")));
-            var errorMessage = errorMessageElement.Text;
-            Assert.That(errorMessage, Does.Match("Your username is invalid!|Your password is invalid!|Username is required"), 
-                "Should see an appropriate error message");
+            return _driver.Title.Contains("The Internet");
         }
     }
 }
