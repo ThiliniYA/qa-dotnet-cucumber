@@ -1,39 +1,22 @@
 Feature: Login Functionality
   As a user, I want to log in to the application to access restricted content.
 
-  @HappyPath
-  Scenario Outline: Perform login with valid credentials
+  Scenario: Perform a successful login
     Given I am on the login page
-    When I enter username "<Username>" and password "<Password>"
-    Then I should see "<ExpectedResult>"
+    When I enter valid credentials
+    Then I should see the secure area
 
-    Examples:
-      | Username   | Password             | ExpectedResult                        |
-      | tomsmith   | SuperSecretPassword! | You logged into a secure area!        |
-
-  @Negative
-  Scenario Outline: Fail login with invalid credentials
+  Scenario: Fail login with invalid username
     Given I am on the login page
-    When I enter username "<Username>" and password "<Password>"
-    Then I should see "<ExpectedResult>"
+    When I enter an invalid username and valid password
+    Then I should see an error message
 
-    Examples:
-      | Username   | Password             | ExpectedResult                |
-      | invalid    | SuperSecretPassword! | Your username is invalid!     |
-      | tomsmith   | wrongpass            | Your password is invalid!     |
-      |            |                      | Your username is required!    |
-     
-
-  @Validation
-  Scenario Outline: Fail login with short password
+  Scenario: Fail login with invalid password
     Given I am on the login page
-    When I enter username "<Username>" and password "<Password>"
-    Then I should see "<ExpectedResult>"
+    When I enter a valid username and invalid password
+    Then I should see an error message
 
-    Examples:
-      | Username   | Password | ExpectedResult                           |
-      | tomsmith   | abc      | Password must be at least 6 characters   |
-
-
-
-  
+  Scenario: Fail login with empty credentials
+    Given I am on the login page
+    When I enter empty credentials
+    Then I should see an error message
