@@ -34,6 +34,20 @@ Feature: Login Functionality
       | Username   | Password | ExpectedResult                           |
       | tomsmith   | abc      | Password must be at least 6 characters   |
 
+ @Destructive
+ Scenario: Fail login with very long username and password
+  Given I am on the login page
+  When I enter username "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" and password "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  Then I should see "Your username or password is invalid!"
+
+ @Destructive
+ Scenario: Fail login with special characters in username and password
+  Given I am on the login page
+  When I enter username "!@#$%^&*()_+|~=`{}[]:\";'<>?,./" and password "!@#$%^&*()_+|~=`{}[]:\";'<>?,./"
+  Then I should see "Your username or password is invalid!"
 
 
-  
+ 
+
+
+ 
